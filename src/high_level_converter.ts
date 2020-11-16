@@ -37,15 +37,12 @@ export function prechacToJif(prechac: PrechacNotation): JIF {
   };
 }
 
-// TODO Remove manipulation parsing. I decided to implement this directly on the JIF level.
-enum ManipulationKind { NONE, SUBSTITUTE, INTERCEPT, CARRY }
 interface PrechacInstruction {
   duration: number;
   passTarget: number | null;
-  manipulation: ManipulationKind;
 }
-// Example: 3B!s ^= single pass to B that is substituted
-const REGEX_INSTRUCTION = /^([0-9a-z])([a-z])?(?:!([sic]))?/i;
+// Example: 3B ^= single pass to B
+const REGEX_INSTRUCTION = /^([0-9a-z])([a-z])?$/i;
 
 function parseInstruction(str: string): PrechacInstruction {
   const match = REGEX_INSTRUCTION.exec(str);
@@ -58,12 +55,7 @@ function parseInstruction(str: string): PrechacInstruction {
     throw new Error('invalid duration for throw: ' + str);
   }
   const passTarget = match[2] ? match[2].toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) : null;
-  const rawManipulation = match[3] && match[3].toLowerCase();
-  const manipulation =
-    rawManipulation === 's' ? ManipulationKind.SUBSTITUTE
-      : rawManipulation === 'i' ? ManipulationKind.INTERCEPT
-        : rawManipulation === 'c' ? ManipulationKind.CARRY : ManipulationKind.NONE;
-  return { duration, passTarget, manipulation };
+  return { duration, passTarget };
 }
 
 // May need to change if default limb order changes.
