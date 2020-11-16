@@ -9,13 +9,15 @@ export interface JIF {
 
 export interface Juggler {
   label?: string;
+  becomes?: number;
   position?: [number, number];
 }
 
+export type LimbKind = 'right_hand'|'left_hand'|'other';
 export interface Limb {
   juggler?: number;
   label?: string;
-  kind?: 'right_hand'|'left_hand'|'other';
+  kind?: LimbKind;
 }
 
 export interface JifObject {

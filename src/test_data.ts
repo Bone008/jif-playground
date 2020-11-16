@@ -4,7 +4,7 @@ import { prechacToJif } from "./high_level_converter";
 import { JIF } from "./jif";
 
 export const DATA_POPCORN: JIF = {
-  jugglers: [{}, {}],
+  jugglers: [{becomes: 1}, {becomes: 0}],
   throws: [
     { duration: 10 },
     { duration: 6 },
@@ -29,4 +29,16 @@ export const DATA_4_COUNT_PASSING: JIF = prechacToJif([
 export const DATA_4_COUNT_PASSING_2X: JIF = prechacToJif([
   '3B 3  3  3  3B 3  3  3',
   '3A 3  3  3  3A 3  3  3',
+]);
+
+export const DATA_WALKING_FEED_9C: JIF = prechacToJif([
+  '3B 3  3C 3  3B 3',
+  '3A 3  3  3  3A 3',
+  '3  3  3A 3  3  3',
+]);
+
+export const DATA_WALKING_FEED_10C: JIF = prechacToJif([
+  '4B 3  4C 3  4B 3  4C',
+  '3  4A 3  3  3  4A 4 ',
+  '2  3  3  4A 3  3  3 ',
 ]);

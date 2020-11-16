@@ -1,4 +1,10 @@
-import { JifObject, Juggler, Limb, JIF, Throw } from "./jif";
+import { JifObject, Juggler, Limb, JIF, Throw, LimbKind } from "./jif";
+
+const LIMB_NAMES_BY_KIND: Record<LimbKind, string> = {
+  right_hand: 'R',
+  left_hand: 'L',
+  other: 'O',
+};
 
 type RequiredRecursive<T> = {
   [P in keyof T]-?:
@@ -15,17 +21,22 @@ export type FullObject = RequiredRecursive<JifObject>;
 
 export function loadWithDefaults(jif: JIF): FullJIF {
   const rawJugglers = jif.jugglers || [{}];
-  const jugglers = rawJugglers.map<FullJuggler>((juggler, i) => ({
-    label: def(juggler.label, indexToJugglerName(i)),
+  const jugglers = rawJugglers.map<FullJuggler>((juggler, j) => ({
+    label: def(juggler.label, indexToJugglerName(j)),
+    becomes: def(juggler.becomes, j),
     position: def(juggler.position, [0, 0]),
   }));
 
   const rawLimbs = jif.limbs || emptyObjects(jugglers.length * 2);
-  const limbs = rawLimbs.map<FullLimb>((limb, i) => ({
-    juggler: def(limb.juggler, i % jugglers.length),
-    label: def(limb.label, i < jugglers.length ? 'R' : i < jugglers.length * 2 ? 'L' : 'O'),
-    kind: def(limb.kind, i < jugglers.length ? 'right_hand' : i < jugglers.length * 2 ? 'left_hand' : 'other'),
-  }));
+  const limbs = rawLimbs.map<FullLimb>((limb, i) => {
+    const kind: LimbKind = def(limb.kind,
+      i < jugglers.length ? 'right_hand' : i < jugglers.length * 2 ? 'left_hand' : 'other');
+    return {
+      juggler: def(limb.juggler, i % jugglers.length),
+      kind,
+      label: def(limb.label, LIMB_NAMES_BY_KIND[kind]),
+    };
+  });
 
   const rawThrows = jif.throws || [];
   const throws = rawThrows.map<FullThrow>((thrw, i) => {
@@ -42,6 +53,10 @@ export function loadWithDefaults(jif: JIF): FullJIF {
 
   const objects: FullObject[] = [/* TODO */];
   return { jugglers, limbs, throws, objects };
+}
+
+export function inferPeriod(jif: FullJIF): number {
+  return Math.max(...jif.throws.map(t => t.time)) + 1;
 }
 
 // Util

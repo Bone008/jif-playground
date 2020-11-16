@@ -1,4 +1,3 @@
-import { throws } from "assert";
 import { JIF } from "../src/jif";
 import { loadWithDefaults } from "../src/jif_loader";
 
@@ -9,7 +8,7 @@ describe('filling in defaults', () => {
     const output = loadWithDefaults(input);
 
     expect(output).toEqual({
-      jugglers: [{ label: 'A', position: jasmine.anything() }],
+      jugglers: [{ label: 'A', becomes: 0, position: jasmine.anything() }],
       limbs: [
         { juggler: 0, label: 'R', kind: 'right_hand' },
         { juggler: 0, label: 'L', kind: 'left_hand' },
@@ -41,8 +40,8 @@ describe('filling in defaults', () => {
 
     expect(output).toEqual({
       jugglers: [
-        { label: 'A', position: jasmine.anything() },
-        { label: 'B', position: jasmine.anything() }
+        { label: 'A', becomes: 0, position: jasmine.anything() },
+        { label: 'B', becomes: 1, position: jasmine.anything() }
       ],
       limbs: [
         { juggler: 0, label: 'R', kind: 'right_hand' },
@@ -57,7 +56,42 @@ describe('filling in defaults', () => {
         { time: 0, duration: 3, from: 1, to: 2, object: jasmine.anything() },
         { time: 1, duration: 3, from: 3, to: 1, object: jasmine.anything() },
         { time: 2, duration: 3, from: 1, to: 3, object: jasmine.anything() }],
-      objects: []
+      objects: jasmine.anything(),
+    });
+  });
+
+  it('retains non-default values', () => {
+    const input: JIF = {
+      jugglers: [
+        { label: 'foo', becomes: 1 },
+        { label: 'bar', becomes: 0 }
+      ],
+      limbs: [
+        { juggler: 1, label: 'wat', kind: 'other' },
+        { juggler: 0, label: 'waz', kind: 'left_hand' },
+      ],
+      throws: [
+        { time: 1, duration: 4, from: 1, to: 1 },
+        { time: 3, duration: 2, from: 0, to: 0 },
+      ],
+    };
+
+    const output = loadWithDefaults(input);
+
+    expect(output).toEqual({
+      jugglers: [
+        { label: 'foo', becomes: 1, position: jasmine.anything() },
+        { label: 'bar', becomes: 0, position: jasmine.anything() }
+      ],
+      limbs: [
+        { juggler: 1, label: 'wat', kind: 'other' },
+        { juggler: 0, label: 'waz', kind: 'left_hand' },
+      ],
+      throws: [
+        { time: 1, duration: 4, from: 1, to: 1, object: jasmine.anything() },
+        { time: 3, duration: 2, from: 0, to: 0, object: jasmine.anything() },
+      ],
+      objects: jasmine.anything(),
     });
   });
 });

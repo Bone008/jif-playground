@@ -10,7 +10,7 @@ describe('prechacToJif', () => {
     const output = prechacToJif(input);
 
     expect(output).toEqual({
-      jugglers: [{}, {}],
+      jugglers: [{becomes: 1}, {becomes: 0}],
       // Assuming limbs: [A:R, B:R, A:L, B:L].
       throws: [
         // A

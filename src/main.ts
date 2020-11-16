@@ -1,14 +1,22 @@
-import { JIF } from "./jif";
 import { loadWithDefaults } from "./jif_loader";
+import { addManipulator } from "./manipulation";
 import orbits from "./orbits";
 import * as testdata from "./test_data";
 
 function main(args: string[]) {
-  const verbose = args.length > 0 && args[0] === '-v';
+  const verbose = args.includes('-v');
+  const withManipulation = args.includes('-m');
 
-  const input = testdata.DATA_4_COUNT_PASSING;
+  const input = testdata.DATA_3_COUNT_PASSING_2X;
+  let data = loadWithDefaults(input);
 
-  const data = loadWithDefaults(input);
+  if (withManipulation) {
+    data = addManipulator(data, [
+      { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
+      { type: 'intercept1b', throwTime: 2, throwFromJuggler: 1 },
+    ]);
+  }
+
   if (verbose) {
     console.log('## INPUT ##');
     console.log(input);
