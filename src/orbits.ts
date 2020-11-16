@@ -1,56 +1,8 @@
-import { PrechacNotation, prechacToJif } from "./high-level-converter";
+import { prechacToJif } from "./high_level_converter";
 import { JIF } from "./jif";
-import { FullJIF, FullThrow, loadWithDefaults } from "./jif-loader";
+import { FullJIF, FullThrow, loadWithDefaults } from "./jif_loader";
 
-const JIF_3_COUNT_PASSING: JIF = {
-  jugglers: [{}, {}],
-  // Limbs: [A:R, B:R, A:L, B:L]
-  throws: [
-    // A
-    { time: 0, from: 0, to: 3 },
-    { time: 1, from: 2, to: 0 },
-    { time: 2, from: 0, to: 2 },
-    // B
-    { time: 0, from: 1, to: 2 },
-    { time: 1, from: 3, to: 1 },
-    { time: 2, from: 1, to: 3 },
-  ],
-};
-
-const INPUT_3_COUNT_PASSING: JIF = prechacToJif([
-  '3B 3  3',
-  '3A 3  3',
-]);
-const INPUT_3_COUNT_PASSING_2X: JIF = prechacToJif([
-  '3B 3  3  3B 3  3',
-  '3A 3  3  3A 3  3',
-]);
-
-// TODO install lodash and assert that both are equal
-
-const INPUT_4_COUNT_PASSING: JIF = prechacToJif([
-  '3B 3  3  3',
-  '3A 3  3  3',
-]);
-const INPUT_4_COUNT_PASSING_2X: JIF = prechacToJif([
-  '3B 3  3  3  3B 3  3  3',
-  '3A 3  3  3  3A 3  3  3',
-]);
-
-const data = loadWithDefaults(INPUT_4_COUNT_PASSING_2X);
-
-function main() {
-  console.log(data);
-  console.log();
-  console.log('Throws with labels:');
-  for (const thrw of data.throws) {
-    const fromLimb = data.limbs[thrw.from];
-    const fromStr = data.jugglers[fromLimb.juggler].label + ':' + fromLimb.label;
-    const toLimb = data.limbs[thrw.to];
-    const toStr = data.jugglers[toLimb.juggler].label + ':' + toLimb.label;
-    console.log(`- t=${thrw.time}: ${thrw.duration} from ${fromStr} to ${toStr}`);
-  }
-
+export default function orbits(data: FullJIF, verbose: boolean) {
   // Assumptions: integer throws, only 1 throw per juggler per beat
   const period = Math.max(...data.throws.map(t => t.time)) + 1;
   // Indexed by [juggler][time].
@@ -60,7 +12,6 @@ function main() {
     throwTable[juggler][thrw.time] = thrw;
   }
 
-  console.log();
   console.log('Table:');
   console.log('t', '|', Array.from({ length: period }, (_, i) => i).join('  '));
   console.log('-'.repeat(1 + 3 * period));
@@ -70,7 +21,7 @@ function main() {
       '|',
       throwTable[j].map(t => {
         const isPass = data.limbs[t.to].juggler !== data.limbs[t.from].juggler;
-        return String(t.duration) + (isPass ? 'p' : ' ');
+        return t.duration.toString(36) + (isPass ? 'p' : ' ');
       }).join(' '));
   }
 
@@ -131,5 +82,3 @@ function main() {
     completeOrbit(nextJ, nextT, orbit);
   }
 }
-
-main();

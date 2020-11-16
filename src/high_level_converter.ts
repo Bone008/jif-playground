@@ -1,5 +1,5 @@
 import { JIF, Throw } from "./jif";
-import { emptyObjects } from "./jif-loader";
+import { emptyObjects } from "./jif_loader";
 
 // Example: "3b 3 3"
 export type PrechacNotation = string[];
