@@ -31,7 +31,7 @@ export default function orbits(data: FullJIF, verbose: boolean) {
   let startT = 0;
   while (startJ < data.jugglers.length) {
     // Find first throw in table that is not part of an orbit yet.
-    if (orbitsByBeat[startJ][startT]) {
+    if (!throwsTable[startJ][startT] || orbitsByBeat[startJ][startT]) {
       startT++;
       if (startT >= period) {
         startT = 0;
@@ -48,7 +48,7 @@ export default function orbits(data: FullJIF, verbose: boolean) {
   console.log();
   for (const orbit of allOrbits) {
     console.log(orbit
-      .map(thrw => data.jugglers[data.limbs[thrw.from].juggler].label + String(thrw.time))
+      .map(thrw => `${data.jugglers[data.limbs[thrw.from].juggler].label}${thrw.time}(${thrw.duration.toString(36)})`)
       .join(' --> '));
   }
   // Alternative layout: A throws table with only this orbit filled in.
@@ -108,7 +108,7 @@ function printThrowsTable(data: FullJIF, throwsTable: Array<FullThrow | null>[],
       '|',
       throwsTable[j].map(t => {
         if (!t) { return '_ '; }
-        if (limbsOnly) { return data.limbs[t.from].label; }
+        if (limbsOnly) { return data.limbs[t.from].label + ' '; }
         const fromJuggler = data.limbs[t.from].juggler;
         const toJuggler = data.limbs[t.to].juggler;
         const targetStr = fromJuggler === toJuggler ? ' ' : data.jugglers[toJuggler].label;

@@ -7,13 +7,27 @@ function main(args: string[]) {
   const verbose = args.includes('-v');
   const withManipulation = args.includes('-m');
 
-  const input = testdata.DATA_3_COUNT_PASSING_2X;
+  const input = testdata.DATA_WALKING_FEED_9C;
   let data = loadWithDefaults(input);
 
   if (withManipulation) {
+    // 3-count roundabout
+    // data = addManipulator(data, [
+    //   { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
+    //   { type: 'intercept1b', throwTime: 2, throwFromJuggler: 1 },
+    // ]);
+
+    // 4-count roundabout
+    // data = addManipulator(data, [
+    //   { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
+    //   { type: 'substitute', throwTime: 2, throwFromJuggler: 1 },
+    //   { type: 'intercept2b', throwTime: 4, throwFromJuggler: 0 },
+    // ]);
+
+    // Scrambled B
     data = addManipulator(data, [
-      { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
-      { type: 'intercept1b', throwTime: 2, throwFromJuggler: 1 },
+      { type: 'intercept2b', throwTime: 0, throwFromJuggler: 0 },
+      { type: 'substitute', throwTime: 4, throwFromJuggler: 1 },
     ]);
   }
 
