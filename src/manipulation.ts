@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { JIF, Juggler, Limb, LimbKind, Throw } from "./jif";
-import { FullJIF, inferPeriod, loadWithDefaults } from "./jif_loader";
+import { FullJIF, FullThrow, inferPeriod, loadWithDefaults } from "./jif_loader";
 
 export interface ManipulatorInstruction {
   type: 'substitute' | 'intercept1b' | 'intercept2b';
@@ -15,7 +15,10 @@ export function addManipulator(inputJif: FullJIF, spec: ManipulatorInstruction[]
   let manipIndex = jif.jugglers.length;
   let manipLimb = jif.limbs.length;
   let manipAltLimb = manipLimb + 1;
-  jif.jugglers.push({ label: 'M', becomes: manipIndex });
+  jif.jugglers.push({
+    label: jif.jugglers.find(j => j.label === 'M') ? 'N' : 'M',
+    becomes: manipIndex,
+  });
   jif.limbs.push({ kind: 'right_hand', juggler: manipIndex });
   jif.limbs.push({ kind: 'left_hand', juggler: manipIndex });
   const period = inferPeriod(inputJif);
@@ -47,7 +50,7 @@ export function addManipulator(inputJif: FullJIF, spec: ManipulatorInstruction[]
     // TODO error handling: validate that throwTime does not overlap with previous manipulation
     fillManipulatorThrows(jif, [lastManipTime + 1, throwTime], manipIndex);
 
-    const thrw = jif.throws.find(t => t.time === throwTime && jif.limbs[t.from!].juggler === throwFromJuggler);
+    const thrw = getThrowFromJuggler(jif, throwFromJuggler, throwTime);
     if (!thrw) {
       throw new Error(`Could not find throw for manipulation at time ${throwTime} from juggler ${throwFromJuggler}!`);
     }
@@ -200,4 +203,30 @@ function getLimbOfJuggler(jif: Required<JIF>, j: number, limbKind: LimbKind): nu
 
 function getThrowFromJuggler(jif: Required<JIF>, j: number, time: number): Throw | null {
   return jif.throws.find(thrw => thrw.time === time && jif.limbs[thrw.from!].juggler === j) || null;
+}
+
+export function formatManipulator(jif: FullJIF, spec: ManipulatorInstruction[], all2Beat = false): string {
+  const period = inferPeriod(jif);
+  let out: string[] = Array(period).fill('--');
+  for (const { type, throwTime, throwFromJuggler } of spec) {
+    if (all2Beat && (throwTime % 2 != 0 || type === 'intercept1b')) {
+      throw new Error('Claimed to be all2Beat, but not true.');
+    }
+
+    const thrw = getThrowFromJuggler(jif, throwFromJuggler, throwTime) as FullThrow;
+    if (!thrw) {
+      throw new Error(`Could not find throw for manipulation at time ${throwTime} from juggler ${throwFromJuggler}!`);
+    }
+    const dest = jif.jugglers[jif.limbs[thrw.to!].juggler].label;
+    if (type === 'substitute') {
+      out[throwTime] = 's' + dest;
+    }
+    else {
+      out[throwTime] = 'i' + dest;
+    }
+  }
+  if (all2Beat) {
+    out = out.filter((_, i) => i % 2 === 0);
+  }
+  return out.join(' ');
 }
