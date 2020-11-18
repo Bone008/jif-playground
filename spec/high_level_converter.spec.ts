@@ -11,16 +11,22 @@ describe('prechacToJif', () => {
 
     expect(output).toEqual({
       jugglers: [{becomes: 1}, {becomes: 0}],
+      limbs: [
+        {juggler: 0, kind: 'right_hand'},
+        {juggler: 0, kind: 'left_hand'},
+        {juggler: 1, kind: 'right_hand'},
+        {juggler: 1, kind: 'left_hand'},
+      ],
       // Assuming limbs: [A:R, B:R, A:L, B:L].
       throws: [
         // A
         { time: 0, duration: 3, from: 0, to: 3 },
-        { time: 1, duration: 3, from: 2, to: 0 },
-        { time: 2, duration: 3, from: 0, to: 2 },
+        { time: 1, duration: 3, from: 1, to: 0 },
+        { time: 2, duration: 3, from: 0, to: 1 },
         // B
-        { time: 0, duration: 3, from: 1, to: 2 },
-        { time: 1, duration: 3, from: 3, to: 1 },
-        { time: 2, duration: 3, from: 1, to: 3 },
+        { time: 0, duration: 3, from: 2, to: 1 },
+        { time: 1, duration: 3, from: 3, to: 2 },
+        { time: 2, duration: 3, from: 2, to: 3 },
       ],
     });
   });

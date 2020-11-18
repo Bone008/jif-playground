@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { FullJIF, FullThrow, inferPeriod } from "./jif_loader";
 
-export default function orbits(data: FullJIF, verbose: boolean) {
+export default function orbits(data: FullJIF, verbose: boolean): FullThrow[][] {
   // Assumptions: integer throws, only 1 throw per juggler per beat
   const period = inferPeriod(data);
   // Indexed by [juggler][time].
@@ -10,7 +10,7 @@ export default function orbits(data: FullJIF, verbose: boolean) {
   for (const thrw of data.throws) {
     const juggler = data.limbs[thrw.from].juggler;
     if (throwsTable[juggler][thrw.time]) {
-      console.warn(`WARNING: More than 1 throw detected by juggler ${data.jugglers[juggler].label
+      console.warn(`\nWARNING: More than 1 throw detected by juggler ${data.jugglers[juggler].label
         } at time ${thrw.time}!\n`);
     }
     throwsTable[juggler][thrw.time] = thrw;
@@ -60,6 +60,8 @@ export default function orbits(data: FullJIF, verbose: boolean) {
     console.log();
   }
 
+  return allOrbits;
+
   function completeOrbit(j: number, t: number, orbit: Orbit = []) {
     const existingOrbit = orbitsByBeat[j][t];
     if (existingOrbit) {
@@ -101,7 +103,7 @@ export default function orbits(data: FullJIF, verbose: boolean) {
 function printThrowsTable(data: FullJIF, throwsTable: Array<FullThrow | null>[], limbsOnly = false) {
   const period = inferPeriod(data);
   console.log('t', '|', Array.from({ length: period }, (_, i) => i).join('  '));
-  console.log('-'.repeat(1 + 3 * period));
+  console.log('-'.repeat(3 + 3 * period));
   for (let j = 0; j < data.jugglers.length; j++) {
     console.log(
       data.jugglers[j].label,

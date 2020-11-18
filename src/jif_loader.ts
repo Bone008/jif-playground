@@ -55,8 +55,8 @@ export function loadWithDefaults(jif: JIF): FullJIF {
   return { jugglers, limbs, throws, objects };
 }
 
-export function inferPeriod(jif: FullJIF): number {
-  return Math.max(...jif.throws.map(t => t.time)) + 1;
+export function inferPeriod(jif: JIF): number {
+  return jif.throws ? Math.max(...jif.throws.map((t, i) => def(t.time, i))) + 1 : 0;
 }
 
 // Util

@@ -25,9 +25,21 @@ function main(args: string[]) {
     // ]);
 
     // Scrambled B
+    // data = addManipulator(data, [
+    //   { type: 'intercept2b', throwTime: 0, throwFromJuggler: 0 },
+    //   { type: 'substitute', throwTime: 4, throwFromJuggler: 1 },
+    // ]);
+
+    // Ivy
+    // data = addManipulator(data, [
+    //   { type: 'intercept2b', throwTime: 0, throwFromJuggler: 1 },
+    //   { type: 'substitute', throwTime: 4, throwFromJuggler: 2 },
+    // ]);
+
+    // V
     data = addManipulator(data, [
-      { type: 'intercept2b', throwTime: 0, throwFromJuggler: 0 },
-      { type: 'substitute', throwTime: 4, throwFromJuggler: 1 },
+      { type: 'substitute', throwTime: 2, throwFromJuggler: 1 },
+      { type: 'intercept2b', throwTime: 4, throwFromJuggler: 2 },
     ]);
   }
 

@@ -46,9 +46,14 @@ export const DATA_WEIRD_PASSING: JIF = prechacToJif([
 ]);
 
 export const DATA_WALKING_FEED_9C: JIF = prechacToJif([
-  '3B 3  3C 3  3B 3',
-  '3A 3  3  3  3A 3',
-  '3  3  3A 3  3  3',
+  '3B 3  3C 3  3B 3 ',
+  '3A 3  3  3  3A 3 ',
+  '3  3  3A 3  3  3 ',
+]);
+export const DATA_WALKING_FEED_9C_2X: JIF = prechacToJif([
+  '3B 3  3C 3  3B 3  3C 3  3  3  3C 3',
+  '3A 3  3  3  3A 3  3  3  3C 3  3  3',
+  '3  3  3A 3  3  3  3A 3  3B 3  3A 3',
 ]);
 
 export const DATA_WALKING_FEED_10C: JIF = prechacToJif([

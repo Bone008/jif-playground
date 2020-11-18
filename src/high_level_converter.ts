@@ -33,6 +33,10 @@ export function prechacToJif(prechac: PrechacNotation): JIF {
   return {
     jugglers: Array.from({ length: prechac.length },
       (_, j) => ({ becomes: (j + 1) % prechac.length })),
+    limbs: Array.from({ length: prechac.length * 2 }, (_, l) => ({
+      juggler: Math.floor(l / 2),
+      kind: l % 2 === 0 ? 'right_hand' : 'left_hand',
+    })),
     throws: jifThrows,
   };
 }
@@ -60,5 +64,5 @@ function parseInstruction(str: string): PrechacInstruction {
 
 // May need to change if default limb order changes.
 function limbOfJuggler(jugglerIndex: number, limbIndex: number, numJugglers: number): number {
-  return jugglerIndex + numJugglers * limbIndex;
+  return 2 * jugglerIndex + limbIndex;
 }
