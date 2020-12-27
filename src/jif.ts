@@ -30,5 +30,4 @@ export interface Throw {
   duration?: number;
   from?: number;
   to?: number;
-  object?: number;
 }
