@@ -30,4 +30,5 @@ export interface Throw {
   duration?: number;
   from?: number;
   to?: number;
+  isManipulated?: boolean;
 }

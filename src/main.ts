@@ -16,25 +16,26 @@ function main(args: string[]) {
   const input = testdata.DATA_WALKING_FEED_10C;
   let data = loadWithDefaults(input);
 
+  let manipulator: ManipulatorInstruction[] | null = null;
   if (withManipulation) {
     // 3-count roundabout
-    // data = addManipulator(data, [
+    // manipulator = [
     //   { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
     //   { type: 'intercept1b', throwTime: 2, throwFromJuggler: 1 },
-    // ]);
+    // ];
 
     // 4-count roundabout
-    // data = addManipulator(data, [
+    // manipulator = [
     //   { type: 'substitute', throwTime: 0, throwFromJuggler: 0 },
     //   { type: 'substitute', throwTime: 2, throwFromJuggler: 1 },
     //   { type: 'intercept2b', throwTime: 4, throwFromJuggler: 0 },
-    // ]);
+    // ];
 
     // Scrambled B
-    // data = addManipulator(data, [
+    // manipulator = [
     //   { type: 'intercept2b', throwTime: 0, throwFromJuggler: 0 },
     //   { type: 'substitute', throwTime: 4, throwFromJuggler: 1 },
-    // ]);
+    // ];
 
     // // V
     // const m: ManipulatorInstruction[] = [
@@ -42,19 +43,28 @@ function main(args: string[]) {
     //   { type: 'intercept2b', throwTime: 4, throwFromJuggler: 2 },
     // ];
     // console.log('Using manipulation:', formatManipulator(data, m, true));
-    // data = addManipulator(data, m);
+    // manipulator = m);
 
     // // Ivy
-    // data = addManipulator(data, [
+    // manipulator = [
     //   { type: 'intercept2b', throwTime: 0, throwFromJuggler: 1 },
     //   { type: 'substitute', throwTime: 4, throwFromJuggler: 2 },
-    // ]);
+    // ];
 
     // Choptopus
-    data = addManipulator(data, [
+    manipulator = [
       { type: 'substitute', throwTime: 1, throwFromJuggler: 1 },
       { type: 'intercept2b', throwTime: 3, throwFromJuggler: 2 },
-    ]);
+    ];
+
+    console.log('Using manipulation:\n    ' + formatManipulator(data, manipulator));
+    console.log();
+    data = addManipulator(data, manipulator);
+  }
+  else {
+    console.log('#######################################################');
+    console.log('NOT adding any manipulation. Use the -m flag to change.');
+    console.log('#######################################################\n');
   }
 
   if (verbose) {
@@ -92,8 +102,7 @@ function doIterateAll() {
         const manipData = addManipulator(data, spec);
         const os = orbits(manipData, false);
         for (const orbit of os) {
-          // TODO Carries are marked as 3p, give them a marker and include them here too!
-          if (orbit.every(thrw => thrw.duration < 3)) {
+          if (orbit.every(thrw => thrw.duration < 3 || thrw.isManipulated)) {
             goodResults.push([spec, manipData, orbit]);
           }
         }

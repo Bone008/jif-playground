@@ -48,7 +48,7 @@ export default function orbits(data: FullJIF, verbose: boolean): FullThrow[][] {
   console.log();
   for (const orbit of allOrbits) {
     console.log(orbit
-      .map(thrw => `${data.jugglers[data.limbs[thrw.from].juggler].label}${thrw.time}(${thrw.duration.toString(36)})`)
+      .map(thrw => `${data.jugglers[data.limbs[thrw.from].juggler].label}${thrw.time}(${thrw.duration.toString(36)}${thrw.isManipulated ? ',m' : ''})`)
       .join(' --> '));
   }
   // Alternative layout: A throws table with only this orbit filled in.
@@ -102,19 +102,20 @@ export default function orbits(data: FullJIF, verbose: boolean): FullThrow[][] {
 
 function printThrowsTable(data: FullJIF, throwsTable: Array<FullThrow | null>[], limbsOnly = false) {
   const period = inferPeriod(data);
-  console.log('t', '|', Array.from({ length: period }, (_, i) => i).join('  '));
-  console.log('-'.repeat(3 + 3 * period));
+  console.log('t', '|', Array.from({ length: period }, (_, i) => i).join('   '));
+  console.log('-'.repeat(3 + 4 * period));
   for (let j = 0; j < data.jugglers.length; j++) {
     console.log(
       data.jugglers[j].label,
       '|',
       throwsTable[j].map(t => {
-        if (!t) { return '_ '; }
-        if (limbsOnly) { return data.limbs[t.from].label + ' '; }
+        if (!t) { return '_  '; }
+        if (limbsOnly) { return data.limbs[t.from].label + '  '; }
         const fromJuggler = data.limbs[t.from].juggler;
         const toJuggler = data.limbs[t.to].juggler;
         const targetStr = fromJuggler === toJuggler ? ' ' : data.jugglers[toJuggler].label;
-        return t.duration.toString(36) + targetStr;
+        const manipStr = t.isManipulated ? 'm' : ' ';
+        return t.duration.toString(36) + targetStr + manipStr;
       }).join(' '),
       '->',
       data.jugglers[data.jugglers[j].becomes].label);

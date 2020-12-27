@@ -47,6 +47,7 @@ export function loadWithDefaults(jif: JIF): FullJIF {
       duration,
       from: def(thrw.from, time % limbs.length),
       to: def(thrw.to, (time + duration) % limbs.length),
+      isManipulated: def(thrw.isManipulated, false),
     };
   });
 

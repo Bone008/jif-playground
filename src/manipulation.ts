@@ -54,9 +54,19 @@ export function addManipulator(inputJif: FullJIF, spec: ManipulatorInstruction[]
     if (!thrw) {
       throw new Error(`Could not find throw for manipulation at time ${throwTime} from juggler ${throwFromJuggler}!`);
     }
+
+    // Mark all types of manipulations as manipulated.
+    thrw.isManipulated = true;
+
     if (type === 'substitute') {
       // Change destination to M, and insert a new throw from M to the original destination.
-      const manipThrow: Throw = { time: throwTime, duration: thrw.duration, from: manipLimb, to: thrw.to };
+      const manipThrow: Throw = {
+        time: throwTime,
+        duration: thrw.duration,
+        from: manipLimb,
+        to: thrw.to,
+        isManipulated: true,
+      };
       jif.throws.push(manipThrow);
       thrw.to = manipAltLimb;
       thrw.duration = 1;
@@ -97,17 +107,20 @@ export function addManipulator(inputJif: FullJIF, spec: ManipulatorInstruction[]
           }
           // This is the crucial throw! Early carry: This is the carry and can stay as-is.
           // Late carry: This throw is delayed a beat and thrown by the old manipulator instead.
-          else if (isLateCarry && deltaToThreshold === 0) {
-            //console.log(`DEBUG: found throw to delay:`, nextThrow);
-            // Insert a 2 here instead, which is the 1 from new manipulator's (t+1) thrown earlier.
-            jif.throws.push({
-              time: nextThrow.time, duration: 2,
-              from: nextThrow.from, to: nextThrow.from,
-            });
-            nextThrow.time!++;
-            nextThrow.duration!--;
-            nextThrow.from = (limbKind === 'right_hand' ? manipAltLimb : manipLimb);
-            // TODO Check if limb handedness is correct.
+          else if (deltaToThreshold === 0) {
+            nextThrow.isManipulated = true;
+            if (isLateCarry) {
+              //console.log(`DEBUG: found throw to delay:`, nextThrow);
+              // Insert a 2 here instead, which is the 1 from new manipulator's (t+1) thrown earlier.
+              jif.throws.push({
+                time: nextThrow.time, duration: 2,
+                from: nextThrow.from, to: nextThrow.from,
+              });
+              nextThrow.time!++;
+              nextThrow.duration!--;
+              nextThrow.from = (limbKind === 'right_hand' ? manipAltLimb : manipLimb);
+              // TODO Check if limb handedness is correct.
+            }
           }
         }
       }
@@ -228,5 +241,5 @@ export function formatManipulator(jif: FullJIF, spec: ManipulatorInstruction[], 
   if (all2Beat) {
     out = out.filter((_, i) => i % 2 === 0);
   }
-  return out.join(' ');
+  return out.join('  ');
 }
